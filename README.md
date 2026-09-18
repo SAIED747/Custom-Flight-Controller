@@ -40,6 +40,9 @@ I learned an enormous amount throughout the process and genuinely enjoyed every 
 ## 🎥 Flight Demonstration
 YOU CAN SEE THEM IN THE VIDEOS FOLDER ABOVE
 
+<img width="832" height="464" alt="GIIIIIIF" src="https://github.com/user-attachments/assets/b7632576-c898-4037-938f-f2f26c4e773d" />
+
+
 <img width="1750" height="850" alt="testing pitch" src="https://github.com/user-attachments/assets/0fe5b95a-7685-400c-a786-1f30fbd1c8f9" />
 
 
