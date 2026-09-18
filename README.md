@@ -186,22 +186,6 @@ I implemented the sensor interfaces and communication logic myself, working dire
 
 The IMU provides the fundamental measurements required for attitude and angular-rate control:
 
-```text
-Accelerometer
-      +
-Gyroscope
-      ↓
-Raw measurements
-      ↓
-Calibration
-      ↓
-Filtering
-      ↓
-State estimation
-      ↓
-Flight control
-```
-
 The IMU communicates with the STM32 through **SPI**.
 
 The driver handles:
@@ -226,27 +210,11 @@ The IMU was operated at high sampling rates to provide sufficient bandwidth for 
 
 The DPS310 provides pressure measurements that can be used for altitude estimation.
 
-The processing chain is conceptually:
-
-```text
-Pressure
-   ↓
-Temperature compensation
-   ↓
-Pressure filtering
-   ↓
-Altitude estimation
-   ↓
-State estimation
-```
-
 ---
 
 # 🧭 Magnetometer — QMC5883P
 
 The magnetometer provides measurements of the Earth's magnetic field and can be used to estimate heading.
-
-The magnetometer is particularly useful for reducing long-term yaw drift when combined with gyroscope measurements in a sensor-fusion framework.
 
 ---
 
@@ -255,14 +223,6 @@ The magnetometer is particularly useful for reducing long-term yaw drift when co
 The GPS provides global position and velocity information.
 
 It can be used by the state-estimation layer for:
-
-* Position estimation
-* Velocity estimation
-* Long-term drift correction
-* Navigation
-* Future autonomous-flight functionality
-
-The GPS operates at a much lower update rate than the IMU, so the system treats GPS as a **low-rate measurement source** within the broader real-time estimation architecture.
 
 ---
 
@@ -278,8 +238,6 @@ Roll command
 Pitch command
 Yaw command
 ```
-
-These references are then passed to the flight-control system.
 
 ---
 
@@ -354,50 +312,9 @@ The frequency-domain analysis was particularly useful for identifying unwanted v
 
 ---
 
-# 🧮 State Estimation and Sensor Fusion
 
-A flight controller cannot directly measure every state required for control.
 
-Instead, multiple noisy sensors must be combined to estimate the vehicle state.
-
-The project therefore investigates **multi-sensor state estimation and sensor fusion**.
-
-A simplified model is:
-
-```text
-             Gyroscope
-                 │
-                 ▼
-          Angular dynamics
-                 │
-                 │
-Accelerometer ───┼───► State Estimator
-                 │
-Magnetometer ────┤
-                 │
-GPS ─────────────┤
-                 │
-Barometer ───────┘
-                 │
-                 ▼
-          Estimated state
-```
-
-The estimator combines information from sensors with different characteristics:
-
-| Sensor        | Strength                                 | Limitation                       |
-| ------------- | ---------------------------------------- | -------------------------------- |
-| Gyroscope     | Excellent short-term angular information | Drift                            |
-| Accelerometer | Gravity reference                        | Sensitive to linear acceleration |
-| Magnetometer  | Heading reference                        | Magnetic disturbances            |
-| GPS           | Global position/velocity                 | Low rate and noisy               |
-| Barometer     | Altitude information                     | Pressure disturbances            |
-
-The central idea is that no single sensor provides a complete and reliable estimate by itself.
-
----
-
-# 🧭 Attitude Estimation
+# 🧭 Attitude Estimation(Euler angles)
 
 Attitude estimation is one of the most important parts of the flight controller.
 
@@ -420,7 +337,6 @@ Roll
 Pitch
 Yaw
 ```
-
 for visualization, reference generation, and control.
 
 ---
@@ -462,6 +378,7 @@ Instead of directly commanding motor outputs from an attitude error, the system 
 # 🔄 Outer Attitude Loop
 
 The outer loop compares the desired attitude with the estimated attitude:
+the attitude here is the Euler angles in the 3-D space (roll, pitch and yaw)
 
 ```text
 Attitude reference
@@ -475,18 +392,9 @@ Attitude controller
 Desired angular rate
 ```
 
-For example:
-
-```text
-θ_error = θ_reference - θ_estimated
-```
 
 The controller converts this attitude error into a desired angular velocity.
 
-This creates a natural separation between:
-
-* **Where the vehicle should point**
-* **How quickly the vehicle should rotate**
 
 ---
 
@@ -505,12 +413,6 @@ Rate controller
         ↓
 Control torque
 ```
-
-Because the gyroscope provides high-rate measurements, the rate loop can operate at a substantially higher frequency than slower navigation processes.
-
-The inner loop is therefore responsible for rejecting disturbances and rapidly controlling the rotational dynamics of the vehicle.
-
-
 
 
 
@@ -549,21 +451,6 @@ For a conventional quadcopter:
 
 The mixer combines the collective throttle command with the required roll, pitch, and yaw corrections.
 
-Conceptually:
-
-$$
-M_i = T + R_i + P_i + Y_i
-$$
-
-where:
-
-* \(T\) = throttle contribution
-* \(R_i\) = roll contribution
-* \(P_i\) = pitch contribution
-* \(Y_i\) = yaw contribution
-
-The resulting values are constrained to the valid actuator range before being sent to the ESCs.
-
 ---
 
 # ⚡ ESC and PWM Generation
@@ -592,30 +479,6 @@ Vehicle Dynamics
 
 The ESCs receive the PWM commands and regulate motor speed accordingly.
 
-This closes the complete control loop:
-
-```text
-Sensor
-  ↓
-State estimation
-  ↓
-Controller
-  ↓
-Mixer
-  ↓
-PWM
-  ↓
-ESC
-  ↓
-Motor
-  ↓
-Propeller
-  ↓
-Drone dynamics
-  ↓
-Sensor
-  ↺
-```
 
 ---
 
@@ -656,16 +519,6 @@ Stable flight
 ```
 
 Each layer was tested before being integrated into the next.
-
-This approach made it possible to isolate problems and distinguish between:
-
-* Hardware problems
-* Driver problems
-* Timing problems
-* Sensor problems
-* Estimation problems
-* Control problems
-* Mechanical problems
 
 ---
 
