@@ -526,6 +526,9 @@ Stable flight
 
 Each layer was tested before being integrated into the next.
 
+<img width="832" height="464" alt="GIIIIIIF" src="https://github.com/user-attachments/assets/c7dccbe0-43a7-4126-aa25-0da88a67612c" />
+
+
 ---
 
 
