@@ -40,6 +40,9 @@ I learned an enormous amount throughout the process and genuinely enjoyed every 
 ## 🎥 Flight Demonstration
 YOU CAN SEE THEM IN THE VIDEOS FOLDER ABOVE
 
+<img width="1750" height="850" alt="testing pitch" src="https://github.com/user-attachments/assets/0fe5b95a-7685-400c-a786-1f30fbd1c8f9" />
+
+
 # 📌 About the Project
 
 This repository contains the embedded firmware for a **custom quadcopter flight controller**, written entirely in **C** and developed for the **STM32H743VIT6** microcontroller using both **STM32 HAL and LL drivers**.
